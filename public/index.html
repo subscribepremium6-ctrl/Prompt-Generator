@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Darkroom — prompt studio</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ===================== Icon rail (original nav) ===================== -->
+  <nav class="rail" aria-label="Primary">
+    <div class="rail-mark" id="icon-mark"></div>
+
+    <button class="rail-btn is-active" data-view="workspace" title="Workspace" id="nav-workspace"></button>
+    <button class="rail-btn" data-view="library" title="Library" id="nav-library"></button>
+
+    <div class="rail-spacer"></div>
+
+    <span class="rail-status" id="rail-status" title="Connection status"></span>
+    <button class="rail-btn" data-view="settings" title="Settings" id="nav-settings"></button>
+  </nav>
+
+  <!-- ============================ Main ============================ -->
+  <main class="main">
+
+    <!-- ---------------------------------------------------------------- -->
+    <!-- WORKSPACE VIEW                                                    -->
+    <!-- ---------------------------------------------------------------- -->
+    <section class="view is-active" id="view-workspace">
+      <div class="view-header">
+        <div>
+          <p class="eyebrow">Exposure setup</p>
+          <h1 class="view-title">Workspace</h1>
+          <p class="view-sub">Describe an idea once. Darkroom develops it into a contact sheet of distinct, ready-to-paste prompts.</p>
+        </div>
+      </div>
+
+      <div class="loupe-card">
+        <label class="field-label" for="concept-input">Seed concept</label>
+        <textarea id="concept-input" class="concept-input" placeholder="e.g. a lighthouse keeper's last night before the tower goes automatic"></textarea>
+
+        <div class="medium-toggle" role="tablist" aria-label="Medium">
+          <button type="button" class="is-active" data-medium="image">Image prompts</button>
+          <button type="button" data-medium="video">Video prompts</button>
+        </div>
+
+        <div class="chip-grid">
+          <div class="chip-field">
+            <label class="field-label" for="sel-style">Style</label>
+            <select id="sel-style">
+              <option value="">Any style</option>
+              <option>Cinematic film still</option>
+              <option>Analog photography</option>
+              <option>Watercolor illustration</option>
+              <option>3D render</option>
+              <option>Ink and charcoal sketch</option>
+              <option>Studio product photography</option>
+            </select>
+          </div>
+          <div class="chip-field">
+            <label class="field-label" for="sel-lighting">Lighting</label>
+            <select id="sel-lighting">
+              <option value="">Any lighting</option>
+              <option>Golden hour</option>
+              <option>Overcast diffuse</option>
+              <option>Hard noon sun</option>
+              <option>Neon night</option>
+              <option>Candlelight</option>
+              <option>Bioluminescent glow</option>
+            </select>
+          </div>
+          <div class="chip-field">
+            <label class="field-label" for="sel-perspective">Perspective</label>
+            <select id="sel-perspective">
+              <option value="">Any perspective</option>
+              <option>Eye level</option>
+              <option>Aerial / drone</option>
+              <option>Low angle</option>
+              <option>Macro close-up</option>
+              <option>Wide establishing shot</option>
+            </select>
+          </div>
+          <div class="chip-field">
+            <label class="field-label" for="sel-palette">Palette</label>
+            <select id="sel-palette">
+              <option value="">Any palette</option>
+              <option>Muted earth tones</option>
+              <option>High-contrast monochrome</option>
+              <option>Saturated jewel tones</option>
+              <option>Pastel wash</option>
+              <option>Cool teal and steel</option>
+            </select>
+          </div>
+          <div class="chip-field">
+            <label class="field-label" for="sel-season">Season / setting</label>
+            <select id="sel-season">
+              <option value="">Any setting</option>
+              <option>Deep winter</option>
+              <option>Late summer</option>
+              <option>Monsoon season</option>
+              <option>Autumn harvest</option>
+              <option>Off-world / speculative</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="loupe-footer">
+          <div class="count-field">
+            <span>Frames per roll</span>
+            <input type="range" id="count-range" min="3" max="12" value="6">
+            <span class="count-value" id="count-value">6</span>
+          </div>
+          <button class="btn btn-primary" id="btn-generate">
+            <span id="generate-icon"></span>
+            Develop prompts
+          </button>
+        </div>
+      </div>
+
+      <div class="sheet-toolbar" id="sheet-toolbar" style="display:none;">
+        <span class="sheet-count" id="sheet-count"></span>
+        <button class="btn btn-ghost" id="btn-regenerate"><span id="regen-icon"></span>Develop another roll</button>
+      </div>
+
+      <div id="results-area"></div>
+    </section>
+
+    <!-- ---------------------------------------------------------------- -->
+    <!-- LIBRARY VIEW                                                      -->
+    <!-- ---------------------------------------------------------------- -->
+    <section class="view" id="view-library">
+      <div class="view-header">
+        <div>
+          <p class="eyebrow">Saved exposures</p>
+          <h1 class="view-title">Library</h1>
+          <p class="view-sub">Prompts you've kept from past rolls, stored in this browser only.</p>
+        </div>
+        <button class="btn btn-ghost" id="btn-clear-library"><span id="clear-icon"></span>Clear library</button>
+      </div>
+      <div id="library-area"></div>
+    </section>
+
+    <!-- ---------------------------------------------------------------- -->
+    <!-- SETTINGS VIEW — BYOK                                              -->
+    <!-- ---------------------------------------------------------------- -->
+    <section class="view" id="view-settings">
+      <div class="view-header">
+        <div>
+          <p class="eyebrow">Bring your own key</p>
+          <h1 class="view-title">Settings</h1>
+          <p class="view-sub">Darkroom never stores your key on a server. It stays in this browser and is sent only through our proxy to the provider you choose.</p>
+        </div>
+      </div>
+
+      <div class="loupe-card" style="max-width: 560px;">
+        <div class="provider-tabs" id="provider-tabs">
+          <button class="provider-tab is-active" data-provider="groq"><span class="dot"></span>Groq</button>
+          <button class="provider-tab" data-provider="gemini"><span class="dot"></span>Gemini</button>
+        </div>
+
+        <label class="field-label" for="api-key-input">API key</label>
+        <div class="key-row">
+          <div class="key-input-wrap">
+            <input type="password" id="api-key-input" class="key-input" placeholder="Paste your key" autocomplete="off">
+            <button class="btn-icon" id="btn-toggle-key" title="Show key"></button>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap: wrap;">
+          <button class="btn btn-primary" id="btn-test-connection"><span id="test-icon"></span>Test connection</button>
+          <button class="btn btn-ghost" id="btn-save-key"><span id="save-icon"></span>Save key</button>
+          <button class="btn btn-ghost" id="btn-remove-key"><span id="remove-icon"></span>Remove key</button>
+        </div>
+
+        <div class="status-banner pending" id="status-banner" style="display:none;"></div>
+
+        <p class="settings-note">Keys are validated with a lightweight request to the provider before saving. Darkroom's backend proxy forwards each request statelessly — it does not log, cache, or persist your key at any point.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="js/icons.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
